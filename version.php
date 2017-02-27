@@ -11,7 +11,7 @@
 defined('MOODLE_INTERNAL') || die;
 
 $plugin->version    = 2013092500;
-$plugin->requires   = 2013111800;
+$plugin->requires   = 2012120311;
 $plugin->maturity   = MATURITY_STABLE;
 $plugin->component  = 'cachestore_redis';
-$plugin->release    = '2.6.0 (Build: 20170215)';
+$plugin->release    = '2.4.0 (Build: 20170227)';
