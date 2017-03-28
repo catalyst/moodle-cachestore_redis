@@ -75,7 +75,7 @@ class cachestore_redis extends cache_store implements cache_is_key_aware, cache_
     /**
      * Connection to Redis for this store.
      *
-     * @var Redis
+     * @var Redis|RedisCluster
      */
     protected $redis;
 
@@ -92,6 +92,13 @@ class cachestore_redis extends cache_store implements cache_is_key_aware, cache_
      * @var int
      */
     protected $compressor = self::COMPRESSOR_NONE;
+
+    /**
+     * Redis in cluster mode.
+     *
+     * @var bool
+     */
+    protected $clustermode = false;
 
     /**
      * Determines if the requirements for this type of store are met.
@@ -150,6 +157,9 @@ class cachestore_redis extends cache_store implements cache_is_key_aware, cache_
         if (array_key_exists('compressor', $configuration)) {
             $this->compressor = (int)$configuration['compressor'];
         }
+        if (array_key_exists('clustermode', $configuration)) {
+            $this->clustermode = (bool)$configuration['clustermode'];
+        }
         $prefix = !empty($configuration['prefix']) ? $configuration['prefix'] : '';
         $this->redis = $this->new_redis($configuration['server'], $prefix);
     }
@@ -160,17 +170,12 @@ class cachestore_redis extends cache_store implements cache_is_key_aware, cache_
      *
      * @param string $server The server connection string
      * @param string $prefix The key prefix
-     * @return Redis
+     * @return Redis|RedisCluster
      */
     protected function new_redis($server, $prefix = '') {
-        $redis = new Redis();
-        $port = null;
-        if (strpos($server, ':')) {
-            $serverconf = explode(':', $server);
-            $server = $serverconf[0];
-            $port = $serverconf[1];
-        }
-        if ($redis->connect($server, $port)) {
+        $redis = $this->clustermode ? $this->new_redis_cluster($server) : $this->new_redis_single($server);
+
+        if ($this->is_ready()) {
             // If using compressor, serialisation will be done at cachestore level, not php-redis.
             if ($this->compressor == cachestore_redis::COMPRESSOR_NONE) {
                 $redis->setOption(Redis::OPT_SERIALIZER, $this->serializer);
@@ -179,10 +184,6 @@ class cachestore_redis extends cache_store implements cache_is_key_aware, cache_
             if (!empty($prefix)) {
                 $redis->setOption(Redis::OPT_PREFIX, $prefix);
             }
-            // Database setting option...
-            $this->isready = $this->ping($redis);
-        } else {
-            $this->isready = false;
         }
         return $redis;
     }
@@ -485,6 +486,7 @@ class cachestore_redis extends cache_store implements cache_is_key_aware, cache_
             'prefix' => $data->prefix,
             'serializer' => $data->serializer,
             'compressor' => $data->compressor,
+            'clustermode' => !empty($data->clustermode),
         );
     }
 
@@ -505,6 +507,7 @@ class cachestore_redis extends cache_store implements cache_is_key_aware, cache_
         if (!empty($config['compressor'])) {
             $data['compressor'] = $config['compressor'];
         }
+        $data['clustermode'] = !empty($config['clustermode']);
         $editform->set_data($data);
     }
 
@@ -598,6 +601,53 @@ class cachestore_redis extends cache_store implements cache_is_key_aware, cache_
                 debugging("Invalid compressor: {$this->compressor}");
                 return $value;
         }
+    }
+
+    /**
+     * Create a new RedisCluster instance already connect to the server.
+     *
+     * @param $servers string The server connection strings separated by newlines.
+     * @return RedisCluster
+     */
+    protected function new_redis_cluster($servers) {
+        $servers = explode("\n", $servers);
+
+        $trimmedservers = [];
+        foreach ($servers as $server) {
+            $server = trim($server);
+            if (!empty($server)) {
+                $trimmedservers[] = $server;
+            }
+        }
+
+        $redis = new RedisCluster(null, $trimmedservers);
+
+        $this->isready = true; // RedisCluster will throw an exception if cannot connect.
+
+        return $redis;
+    }
+
+    /**
+     * Create a new Redis instance and connect to the server.
+     *
+     * @param string $server The server connection string
+     * @return Redis
+     */
+    protected function new_redis_single($server) {
+        $redis = new Redis();
+        $port = null;
+        if (strpos($server, ':')) {
+            $serverconf = explode(':', $server);
+            $server = $serverconf[0];
+            $port = $serverconf[1];
+        }
+
+        $this->isready = false;
+        if (!$redis->connect($server, $port)) {
+            $this->isready = $this->ping($redis);
+        }
+
+        return $redis;
     }
 
     private function uncompress($value) {
