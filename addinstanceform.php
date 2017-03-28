@@ -39,7 +39,13 @@ class cachestore_redis_addinstance_form extends cachestore_addinstance_form {
     protected function configuration_definition() {
         $form = $this->_form;
 
-        $form->addElement('text', 'server', get_string('server', 'cachestore_redis'), array('size' => 24));
+        $clusteravailable = class_exists('RedisClusterr');
+        $form->addElement('checkbox', 'clustermode',
+                          get_string('clustermode', 'cachestore_redis'),
+                          $clusteravailable ? '' : get_string('clustermodeunavailable', 'cachestore_redis'),
+                          $clusteravailable ? '' : 'disabled');
+
+        $form->addElement('textarea', 'server', get_string('server', 'cachestore_redis'), array('size' => 24));
         $form->setType('server', PARAM_TEXT);
         $form->addHelpButton('server', 'server', 'cachestore_redis');
         $form->addRule('server', get_string('required'), 'required');

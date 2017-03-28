@@ -24,6 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['clustermode'] = 'Cluster Mode';
+$string['clustermodeunavailable'] = '<i>Redis Cluster unavailable. Do you have redis 3.0.0+ installed?</i>';
 $string['compressor_none'] = 'No compression.';
 $string['compressor_php_gzip'] = 'Use gzip compression.';
 $string['pluginname'] = 'Redis';
@@ -40,6 +42,8 @@ $string['server'] = 'Server';
 $string['server_help'] = 'This sets the hostname or IP address of the Redis server to use.';
 $string['password'] = 'Password';
 $string['password_help'] = 'This sets the password of the Redis server.';
+$string['server'] = 'Server(s)';
+$string['server_help'] = '<b>Format:</b> <i>host:port</i><br />This sets the hostname or IP address of the Redis server to use.<br />For clustered mode provide one server per line.';
 $string['test_server'] = 'Test server';
 $string['test_server_desc'] = 'Redis server to use for testing.';
 $string['test_password'] = 'Test server password';
