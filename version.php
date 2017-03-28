@@ -24,8 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version    = 2016121300;
-$plugin->requires   = 2016052300;
+$plugin->version    = 2016121301;
+$plugin->requires   = 2016052305;
 $plugin->maturity   = MATURITY_STABLE;
 $plugin->component  = 'cachestore_redis';
-$plugin->release    = '3.1.3';
+$plugin->release    = '3.0.4 (Build: 20160509) Backported';
