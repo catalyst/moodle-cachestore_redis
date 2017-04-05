@@ -20,11 +20,14 @@
  * @package   cachestore_redis
  * @copyright 2013 Adam Durana
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @var $CFG  stdClass
  */
 
 defined('MOODLE_INTERNAL') || die();
 
+global $CFG;
 require_once($CFG->dirroot.'/cache/forms.php');
+require_once(__DIR__.'/lib.php');
 
 /**
  * Form for adding instance of Redis Cache Store.
@@ -33,17 +36,26 @@ require_once($CFG->dirroot.'/cache/forms.php');
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class cachestore_redis_addinstance_form extends cachestore_addinstance_form {
+    /** @var bool */
+    private static $clusteravailable = null;
+
+    protected static function is_cluster_available() {
+        if (is_null(self::$clusteravailable)) {
+            self::$clusteravailable = class_exists('RedisCluster');
+        }
+        return self::$clusteravailable;
+    }
+
     /**
      * Builds the form for creating an instance.
      */
     protected function configuration_definition() {
         $form = $this->_form;
 
-        $clusteravailable = class_exists('RedisCluster');
         $form->addElement('checkbox', 'clustermode',
                           get_string('clustermode', 'cachestore_redis'),
-                          $clusteravailable ? '' : get_string('clustermodeunavailable', 'cachestore_redis'),
-                          $clusteravailable ? '' : 'disabled');
+                          self::is_cluster_available() ? '' : get_string('clustermodeunavailable', 'cachestore_redis'),
+                          self::is_cluster_available() ? '' : 'disabled');
 
         $form->addElement('textarea', 'server', get_string('server', 'cachestore_redis'), array('size' => 24));
         $form->setType('server', PARAM_TEXT);
@@ -66,5 +78,40 @@ class cachestore_redis_addinstance_form extends cachestore_addinstance_form {
         $form->addHelpButton('compressor', 'usecompressor', 'cachestore_redis');
         $form->setDefault('compressor', cachestore_redis::COMPRESSOR_NONE);
         $form->setType('compressor', PARAM_INT);
+    }
+
+    /**
+     * Validates the configuration form data
+     *
+     * @param array $data
+     * @param array $files
+     * @return array
+     */
+    public function configuration_validation($data, $files, $errors) {
+        $clusteravailable = self::is_cluster_available();
+        $clustermode = !empty($data['clustermode']);
+        $servers = explode("\n", $data['server']);
+
+        // Sanity check, check if RedisCluster installed (should not happend as checkbox is disabled).
+        if (!$clusteravailable && $clustermode) {
+            $errors['clustermode'] = get_string('clustermodeunavailable', 'cachestore_redis');
+        }
+
+        if ($clustermode) {
+            // In cluster mode port is mandatory.
+            foreach ($servers as $server) {
+                $server = explode(':', $server);
+                if (count($server) != 2) {
+                    $errors['server'] = get_string('formerror_clusterserver', 'cachestore_redis');
+                }
+            }
+        } else {
+            // Multiple servers only allowed in cluster mode.
+            if (count($servers) != 1) {
+                $errors['server'] = get_string('formerror_singleserveronly', 'cachestore_redis');
+            }
+        }
+
+        return $errors;
     }
 }
