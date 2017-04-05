@@ -39,7 +39,7 @@ class cachestore_redis_addinstance_form extends cachestore_addinstance_form {
     protected function configuration_definition() {
         $form = $this->_form;
 
-        $clusteravailable = class_exists('RedisClusterr');
+        $clusteravailable = class_exists('RedisCluster');
         $form->addElement('checkbox', 'clustermode',
                           get_string('clustermode', 'cachestore_redis'),
                           $clusteravailable ? '' : get_string('clustermodeunavailable', 'cachestore_redis'),
