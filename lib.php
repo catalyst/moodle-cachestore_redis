@@ -132,6 +132,7 @@ class cachestore_redis extends cache_store implements cache_is_key_aware, cache_
     /**
      * Get the features of this type of cache store.
      *
+     * @inheritdoc PHPMD will not warn about unused parameters if overriding.
      * @param array $configuration
      * @return int
      */
@@ -142,6 +143,7 @@ class cachestore_redis extends cache_store implements cache_is_key_aware, cache_
     /**
      * Get the supported modes of this type of cache store.
      *
+     * @inheritdoc PHPMD will not warn about unused parameters if overriding.
      * @param array $configuration
      * @return int
      */
@@ -198,7 +200,7 @@ class cachestore_redis extends cache_store implements cache_is_key_aware, cache_
             }
             $redis->setOption(Redis::OPT_SERIALIZER, $this->serializer);
             // If using compressor, serialisation will be done at cachestore level, not php-redis.
-            if ($this->compressor == cachestore_redis::COMPRESSOR_NONE) {
+            if ($this->compressor == self::COMPRESSOR_NONE) {
                 $redis->setOption(Redis::OPT_SERIALIZER, $this->serializer);
             }
 

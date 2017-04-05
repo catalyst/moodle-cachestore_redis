@@ -40,6 +40,7 @@ require_once(__DIR__.'/../lib.php');
  * @author    Daniel Thee Roperto <daniel.roperto@catalyst-au.net>
  * @copyright 2017 Catalyst IT Australia {@link http://www.catalyst-au.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @SuppressWarnings(public) Allow as many methods as needed.
  */
 class cachestore_redis_compressor_test extends advanced_testcase {
     public function create_store($compressor, $serializer) {
@@ -275,7 +276,7 @@ class cachestore_redis_compressor_test extends advanced_testcase {
     /**
      * @dataProvider provider_for_test_it_can_use_serializers
      */
-    public function test_it_can_use_serializers_getset($name, $serializer, $rawexpected1, $rawexpected2) {
+    public function test_it_can_use_serializers_getset($name, $serializer, $rawexpected1) {
         if (is_null($this->store)) {
             return; // Redis not enabled.
         }

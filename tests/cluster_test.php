@@ -70,8 +70,10 @@ class cachestore_redis_cluster_test extends advanced_testcase {
             self::markTestSkipped('Could not test cachestore_redis with cluster, class RedisCluster not available.');
         }
         if (!defined('TEST_CACHESTORE_REDIS_TESTSERVERSCLUSTER')) {
-            self::markTestSkipped('Could not test cachestore_redis with cluster, missing configuration. ' .
-                                  "Example: define('TEST_CACHESTORE_REDIS_TESTSERVERSCLUSTER', 'localhost:7000,localhost:7001,localhost:7002');");
+            self::markTestSkipped(
+                'Could not test cachestore_redis with cluster, missing configuration. Example: '.
+                "define('TEST_CACHESTORE_REDIS_TESTSERVERSCLUSTER', 'localhost:7000,localhost:7001,localhost:7002');"
+            );
         }
     }
 
@@ -83,8 +85,6 @@ class cachestore_redis_cluster_test extends advanced_testcase {
 
     public function test_it_trims_server_names() {
         global $DB;
-
-        $definition = cache_definition::load_adhoc(cache_store::MODE_APPLICATION, 'cachestore_redis', 'phpunit_test');
 
         // Add a time before and spaces after the first server. Also adds a blank line before second server.
         $servers = explode(',', TEST_CACHESTORE_REDIS_TESTSERVERSCLUSTER);
