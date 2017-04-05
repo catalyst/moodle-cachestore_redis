@@ -44,6 +44,16 @@ class cachestore_redis extends cache_store implements cache_is_key_aware, cache_
     const COMPRESSOR_NONE = 0;
     const COMPRESSOR_PHP_GZIP = 1;
 
+    /** @var bool */
+    private static $clusteravailable = null;
+
+    public static function is_cluster_available() {
+        if (is_null(self::$clusteravailable)) {
+            self::$clusteravailable = class_exists('RedisCluster');
+        }
+        return self::$clusteravailable;
+    }
+
     /**
      * Name of this store.
      *
