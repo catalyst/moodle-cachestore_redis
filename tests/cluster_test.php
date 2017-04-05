@@ -18,9 +18,9 @@
  * Redis cache test - cluster.
  *
  * If you wish to use these unit tests all you need to do is add the following definition to
- * your config.php file.
+ * your config.php file:
  *
- * define('TEST_CACHESTORE_REDIS_TESTSERVERS', '127.0.0.1');
+ * define('TEST_CACHESTORE_REDIS_TESTSERVERSCLUSTER', 'localhost:7000,localhost:7001');
  *
  * @package   cachestore_redis
  * @author    Daniel Thee Roperto <daniel.roperto@catalyst-au.net>
