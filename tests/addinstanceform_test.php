@@ -38,10 +38,10 @@ require_once(__DIR__.'/../addinstanceform.php');
 class cachestore_redis_addinstanceform_test extends advanced_testcase {
     private function mock_redis_cluster_availability($value) {
         // Hack property to make redis cluster enabled/disabled or let it auto-detect (null).
-        $refObject = new ReflectionClass(cachestore_redis::class);
-        $refProperty = $refObject->getProperty('clusteravailable');
-        $refProperty->setAccessible(true);
-        $refProperty->setValue(null, $value);
+        $object = new ReflectionClass(cachestore_redis::class);
+        $property = $object->getProperty('clusteravailable');
+        $property->setAccessible(true);
+        $property->setValue(null, $value);
     }
 
     public function check_successfull_submit(array $data = []) {
@@ -65,7 +65,7 @@ class cachestore_redis_addinstanceform_test extends advanced_testcase {
      * @param array $data
      * @return array
      */
-    public function mock_submit(array $data) : array {
+    public function mock_submit(array $data) {
         $defaults = [
             'name'   => 'redis_test',
             'server' => 'something.test:1234',
