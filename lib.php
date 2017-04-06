@@ -369,7 +369,12 @@ class cachestore_redis extends cache_store implements cache_is_key_aware, cache_
      */
     public function instance_deleted() {
         $this->purge();
-        $this->redis->close();
+        if (!$this->isready) {
+            debugging('Deleted instance not ready.');
+            return;
+        } else {
+            $this->redis->close();
+        }
         unset($this->redis);
     }
 

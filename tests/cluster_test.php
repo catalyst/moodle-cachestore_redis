@@ -166,4 +166,26 @@ class cachestore_redis_cluster_test extends advanced_testcase {
 
         self::assertFalse($store->purge());
     }
+
+    public function test_it_deletes_instance_even_if_not_connected() {
+        global $DB;
+
+        $config = [
+            'server'      => "abc:123",
+            'prefix'      => $DB->get_prefix(),
+            'clustermode' => true,
+        ];
+        $store = new cachestore_redis('TestCluster', $config);
+
+        // Failed to connect should show a debugging message.
+        self::assertCount(1, phpunit_util::get_debugging_messages() );
+        phpunit_util::reset_debugging();
+
+        // This command should abort the execution.
+        $store->instance_deleted();
+
+        // It should show a warning because the instance was not ready.
+        self::assertCount(1, phpunit_util::get_debugging_messages() );
+        phpunit_util::reset_debugging();
+    }
 }
