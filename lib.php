@@ -632,9 +632,15 @@ class cachestore_redis extends cache_store implements cache_is_key_aware, cache_
             }
         }
 
-        $redis = new RedisCluster(null, $trimmedservers);
+        $redis = null;
+        $this->isready = false;
 
-        $this->isready = true; // RedisCluster will throw an exception if cannot connect.
+        try {
+            $redis = new RedisCluster(null, $trimmedservers);
+            $this->isready = true;
+        } catch (RedisClusterException $exception) {
+            debugging($exception->getMessage());
+        }
 
         return $redis;
     }

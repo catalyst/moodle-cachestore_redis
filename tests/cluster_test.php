@@ -132,4 +132,21 @@ class cachestore_redis_cluster_test extends advanced_testcase {
         $actual = $store->get_many($keys);
         self::assertSame($expected, $actual);
     }
+
+    public function test_it_is_marked_not_ready_if_failed_to_connect() {
+        global $DB;
+
+        $config = [
+            'server'      => "abc:123",
+            'prefix'      => $DB->get_prefix(),
+            'clustermode' => true,
+        ];
+        $store = new cachestore_redis('TestCluster', $config);
+
+        // Failed to connect should show a debugging message.
+        self::assertCount(1, phpunit_util::get_debugging_messages() );
+        phpunit_util::reset_debugging();
+
+        self::assertFalse($store->is_ready());
+    }
 }
