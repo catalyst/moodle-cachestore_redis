@@ -149,4 +149,21 @@ class cachestore_redis_cluster_test extends advanced_testcase {
 
         self::assertFalse($store->is_ready());
     }
+
+    public function test_it_does_not_purge_caches_if_not_ready() {
+        global $DB;
+
+        $config = [
+            'server'      => "abc:123",
+            'prefix'      => $DB->get_prefix(),
+            'clustermode' => true,
+        ];
+        $store = new cachestore_redis('TestCluster', $config);
+
+        // Failed to connect should show a debugging message.
+        self::assertCount(1, phpunit_util::get_debugging_messages() );
+        phpunit_util::reset_debugging();
+
+        self::assertFalse($store->purge());
+    }
 }

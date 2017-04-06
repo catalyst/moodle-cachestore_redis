@@ -368,6 +368,10 @@ class cachestore_redis extends cache_store implements cache_is_key_aware, cache_
      * @return bool
      */
     public function purge() {
+        if (!$this->isready) {
+            return false;
+        }
+
         return ($this->redis->del($this->hash) !== false);
     }
 
