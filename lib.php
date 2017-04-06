@@ -681,7 +681,7 @@ class cachestore_redis extends cache_store implements cache_is_key_aware, cache_
         }
 
         $this->isready = false;
-        if (!$redis->connect($server, $port)) {
+        if ($redis->connect($server, $port)) {
             $this->isready = $this->ping($redis);
         }
 
