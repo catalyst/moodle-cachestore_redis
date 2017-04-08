@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Redis Cache Store - Add instance form
+ * Advanced Redis Cache Store - Add instance form
  *
- * @package   cachestore_redis
+ * @package   cachestore_advredis
  * @copyright 2013 Adam Durana
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @var $CFG  stdClass
@@ -35,7 +35,7 @@ require_once(__DIR__.'/lib.php');
  * @copyright   2013 Adam Durana
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class cachestore_redis_addinstance_form extends cachestore_addinstance_form {
+class cachestore_advredis_addinstance_form extends cachestore_addinstance_form {
     /**
      * Builds the form for creating an instance.
      */
@@ -43,30 +43,30 @@ class cachestore_redis_addinstance_form extends cachestore_addinstance_form {
         $form = $this->_form;
 
         $form->addElement('checkbox', 'clustermode',
-                          get_string('clustermode', 'cachestore_redis'),
-                          cachestore_redis::is_cluster_available() ? '' : get_string('clustermodeunavailable', 'cachestore_redis'),
-                          cachestore_redis::is_cluster_available() ? '' : 'disabled');
+                          get_string('clustermode', 'cachestore_advredis'),
+                          cachestore_advredis::is_cluster_available() ? '' : get_string('clustermodeunavailable', 'cachestore_advredis'),
+                          cachestore_advredis::is_cluster_available() ? '' : 'disabled');
 
-        $form->addElement('textarea', 'server', get_string('server', 'cachestore_redis'), array('size' => 24));
+        $form->addElement('textarea', 'server', get_string('server', 'cachestore_advredis'), array('size' => 24));
         $form->setType('server', PARAM_TEXT);
-        $form->addHelpButton('server', 'server', 'cachestore_redis');
+        $form->addHelpButton('server', 'server', 'cachestore_advredis');
         $form->addRule('server', get_string('required'), 'required');
 
-        $form->addElement('text', 'prefix', get_string('prefix', 'cachestore_redis'), array('size' => 16));
+        $form->addElement('text', 'prefix', get_string('prefix', 'cachestore_advredis'), array('size' => 16));
         $form->setType('prefix', PARAM_TEXT); // We set to text but we have a rule to limit to alphanumext.
-        $form->addHelpButton('prefix', 'prefix', 'cachestore_redis');
-        $form->addRule('prefix', get_string('prefixinvalid', 'cachestore_redis'), 'regex', '#^[a-zA-Z0-9\-_]+$#');
+        $form->addHelpButton('prefix', 'prefix', 'cachestore_advredis');
+        $form->addRule('prefix', get_string('prefixinvalid', 'cachestore_advredis'), 'regex', '#^[a-zA-Z0-9\-_]+$#');
 
-        $serializeroptions = cachestore_redis::config_get_serializer_options();
-        $form->addElement('select', 'serializer', get_string('useserializer', 'cachestore_redis'), $serializeroptions);
-        $form->addHelpButton('serializer', 'useserializer', 'cachestore_redis');
+        $serializeroptions = cachestore_advredis::config_get_serializer_options();
+        $form->addElement('select', 'serializer', get_string('useserializer', 'cachestore_advredis'), $serializeroptions);
+        $form->addHelpButton('serializer', 'useserializer', 'cachestore_advredis');
         $form->setDefault('serializer', Redis::SERIALIZER_PHP);
         $form->setType('serializer', PARAM_INT);
 
-        $compressoroptions = cachestore_redis::config_get_compressor_options();
-        $form->addElement('select', 'compressor', get_string('usecompressor', 'cachestore_redis'), $compressoroptions);
-        $form->addHelpButton('compressor', 'usecompressor', 'cachestore_redis');
-        $form->setDefault('compressor', cachestore_redis::COMPRESSOR_NONE);
+        $compressoroptions = cachestore_advredis::config_get_compressor_options();
+        $form->addElement('select', 'compressor', get_string('usecompressor', 'cachestore_advredis'), $compressoroptions);
+        $form->addHelpButton('compressor', 'usecompressor', 'cachestore_advredis');
+        $form->setDefault('compressor', cachestore_advredis::COMPRESSOR_NONE);
         $form->setType('compressor', PARAM_INT);
     }
 
@@ -78,13 +78,13 @@ class cachestore_redis_addinstance_form extends cachestore_addinstance_form {
      * @return array
      */
     public function configuration_validation($data, $files, $errors) {
-        $clusteravailable = cachestore_redis::is_cluster_available();
+        $clusteravailable = cachestore_advredis::is_cluster_available();
         $clustermode = !empty($data['clustermode']);
         $servers = explode("\n", $data['server']);
 
         // Sanity check, check if RedisCluster installed (should not happend as checkbox is disabled).
         if (!$clusteravailable && $clustermode) {
-            $errors['clustermode'] = get_string('clustermodeunavailable', 'cachestore_redis');
+            $errors['clustermode'] = get_string('clustermodeunavailable', 'cachestore_advredis');
         }
 
         if ($clustermode) {
@@ -92,7 +92,7 @@ class cachestore_redis_addinstance_form extends cachestore_addinstance_form {
         } else {
             // Multiple servers only allowed in cluster mode.
             if (count($servers) != 1) {
-                $errors['server'] = get_string('formerror_singleserveronly', 'cachestore_redis');
+                $errors['server'] = get_string('formerror_singleserveronly', 'cachestore_advredis');
             }
         }
 
@@ -114,7 +114,7 @@ class cachestore_redis_addinstance_form extends cachestore_addinstance_form {
                 }
                 $errors['server'][] = get_string(
                     'formerror_clusterserver',
-                    'cachestore_redis',
+                    'cachestore_advredis',
                     ['server' => $server]
                 );
             }

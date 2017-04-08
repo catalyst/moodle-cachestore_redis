@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Redis Cache Store - English language strings
+ * Advanced Redis Cache Store - English language strings
  *
- * @package   cachestore_redis
+ * @package   cachestore_advredis
  * @copyright 2013 Adam Durana
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

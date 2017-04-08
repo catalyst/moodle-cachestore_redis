@@ -15,14 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Redis cache test - compressor settings.
+ * Advanced Redis cache test - compressor settings.
  *
  * If you wish to use these unit tests all you need to do is add the following definition to
  * your config.php file.
  *
- * define('TEST_CACHESTORE_REDIS_TESTSERVERS', '127.0.0.1');
+ * define('TEST_CACHESTORE_ADVREDIS_TESTSERVERS', '127.0.0.1');
  *
- * @package   cachestore_redis
+ * @package   cachestore_advredis
  * @author    Daniel Thee Roperto <daniel.roperto@catalyst-au.net>
  * @copyright 2017 Catalyst IT Australia {@link http://www.catalyst-au.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -34,47 +34,47 @@ require_once(__DIR__.'/../../../tests/fixtures/stores.php');
 require_once(__DIR__.'/../lib.php');
 
 /**
- * Redis cache test - compressor settings.
+ * Advanced Redis cache test - compressor settings.
  *
- * @package   cachestore_redis
+ * @package   cachestore_advredis
  * @author    Daniel Thee Roperto <daniel.roperto@catalyst-au.net>
  * @copyright 2017 Catalyst IT Australia {@link http://www.catalyst-au.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @SuppressWarnings(public) Allow as many methods as needed.
  */
-class cachestore_redis_compressor_test extends advanced_testcase {
+class cachestore_advredis_compressor_test extends advanced_testcase {
     public function create_store($compressor, $serializer) {
-        if (!cachestore_redis::are_requirements_met() || !defined('TEST_CACHESTORE_REDIS_TESTSERVERS')) {
-            $this->markTestSkipped('Could not test cachestore_redis. Requirements are not met.');
+        if (!cachestore_advredis::are_requirements_met() || !defined('TEST_CACHESTORE_ADVREDIS_TESTSERVERS')) {
+            $this->markTestSkipped('Could not test cachestore_advredis. Requirements are not met.');
             return null;
         }
 
         /** @var cache_definition $definition */
-        $definition = cache_definition::load_adhoc(cache_store::MODE_APPLICATION, 'cachestore_redis', 'phpunit_test');
-        $config = cachestore_redis::unit_test_configuration();
+        $definition = cache_definition::load_adhoc(cache_store::MODE_APPLICATION, 'cachestore_advredis', 'phpunit_test');
+        $config = cachestore_advredis::unit_test_configuration();
         $config['compressor'] = $compressor;
         $config['serializer'] = $serializer;
-        $store = new cachestore_redis('Test', $config);
+        $store = new cachestore_advredis('Test', $config);
         $store->initialise($definition);
 
         return $store;
     }
 
     /**
-     * @var cachestore_redis
+     * @var cachestore_advredis
      */
     protected $store = null;
 
     public function setUp() {
         parent::setUp();
 
-        $this->store = $this->create_store(cachestore_redis::COMPRESSOR_PHP_GZIP, Redis::SERIALIZER_PHP);
+        $this->store = $this->create_store(cachestore_advredis::COMPRESSOR_PHP_GZIP, Redis::SERIALIZER_PHP);
     }
 
     protected function tearDown() {
         parent::tearDown();
 
-        if ($this->store instanceof cachestore_redis) {
+        if ($this->store instanceof cachestore_advredis) {
             $this->store->purge();
         }
     }
@@ -88,7 +88,7 @@ class cachestore_redis_compressor_test extends advanced_testcase {
         $expected = gzencode(serialize('the value'));
 
         // Disable compressor to check stored value.
-        $rawstore = $this->create_store(cachestore_redis::COMPRESSOR_NONE, Redis::SERIALIZER_NONE);
+        $rawstore = $this->create_store(cachestore_advredis::COMPRESSOR_NONE, Redis::SERIALIZER_NONE);
         $actual = $rawstore->get('the key'); // Compressor was disabled.
 
         self::assertSame($expected, $actual);
@@ -112,7 +112,7 @@ class cachestore_redis_compressor_test extends advanced_testcase {
         $this->store->set_many($values);
 
         // Disable compressor to check stored value.
-        $rawstore = $this->create_store(cachestore_redis::COMPRESSOR_NONE, Redis::SERIALIZER_NONE);
+        $rawstore = $this->create_store(cachestore_advredis::COMPRESSOR_NONE, Redis::SERIALIZER_NONE);
 
         foreach ($values as $value) {
             $expected = gzencode(serialize($value['value']));
@@ -248,7 +248,7 @@ class cachestore_redis_compressor_test extends advanced_testcase {
         $this->store->set('my key', 'my value');
 
         // Create a connection without serialisation or compressor to fetch raw data.
-        $rawstore = $this->create_store(cachestore_redis::COMPRESSOR_NONE, Redis::SERIALIZER_NONE);
+        $rawstore = $this->create_store(cachestore_advredis::COMPRESSOR_NONE, Redis::SERIALIZER_NONE);
 
         $rawdata = $rawstore->get('my key');
         $expected = gzencode(serialize('my value')); // It should not have an extra serialisation.
@@ -282,10 +282,10 @@ class cachestore_redis_compressor_test extends advanced_testcase {
         }
 
         // Create a connection with the desired serialisation.
-        $store = $this->create_store(cachestore_redis::COMPRESSOR_PHP_GZIP, $serializer);
+        $store = $this->create_store(cachestore_advredis::COMPRESSOR_PHP_GZIP, $serializer);
 
         // Create a connection without serialisation or compressor to fetch raw data.
-        $rawstore = $this->create_store(cachestore_redis::COMPRESSOR_NONE, Redis::SERIALIZER_NONE);
+        $rawstore = $this->create_store(cachestore_advredis::COMPRESSOR_NONE, Redis::SERIALIZER_NONE);
 
         $store->set('key', 'value1');
         $data = $store->get('key');
@@ -311,11 +311,11 @@ class cachestore_redis_compressor_test extends advanced_testcase {
         $rawexpectations = ['key1' => $rawexpected1, 'key2' => $rawexpected2];
 
         // Create a connection with the desired serialisation.
-        $store = $this->create_store(cachestore_redis::COMPRESSOR_PHP_GZIP, $serializer);
+        $store = $this->create_store(cachestore_advredis::COMPRESSOR_PHP_GZIP, $serializer);
         $store->set_many($many);
 
         // Create a connection without serialisation or compressor to fetch raw data.
-        $rawstore = $this->create_store(cachestore_redis::COMPRESSOR_NONE, Redis::SERIALIZER_NONE);
+        $rawstore = $this->create_store(cachestore_advredis::COMPRESSOR_NONE, Redis::SERIALIZER_NONE);
 
         $data = $store->get_many($keys);
         $rawdata = $rawstore->get_many($keys);

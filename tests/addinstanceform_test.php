@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Redis cache test - add instance form.
+ * Advanced Redis cache test - add instance form.
  *
- * @package   cachestore_redis
+ * @package   cachestore_advredis
  * @author    Daniel Thee Roperto <daniel.roperto@catalyst-au.net>
  * @copyright 2017 Catalyst IT Australia {@link http://www.catalyst-au.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -28,17 +28,17 @@ defined('MOODLE_INTERNAL') || die();
 require_once(__DIR__.'/../addinstanceform.php');
 
 /**
- * Redis cache test - add instance form.
+ * Advanced Redis cache test - add instance form.
  *
- * @package   cachestore_redis
+ * @package   cachestore_advredis
  * @author    Daniel Thee Roperto <daniel.roperto@catalyst-au.net>
  * @copyright 2017 Catalyst IT Australia {@link http://www.catalyst-au.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class cachestore_redis_addinstanceform_test extends advanced_testcase {
+class cachestore_advredis_addinstanceform_test extends advanced_testcase {
     private function mock_redis_cluster_availability($value) {
         // Hack property to make redis cluster enabled/disabled or let it auto-detect (null).
-        $object = new ReflectionClass(cachestore_redis::class);
+        $object = new ReflectionClass(cachestore_advredis::class);
         $property = $object->getProperty('clusteravailable');
         $property->setAccessible(true);
         $property->setValue(null, $value);
@@ -71,9 +71,9 @@ class cachestore_redis_addinstanceform_test extends advanced_testcase {
             'server' => 'something.test:1234',
         ];
         $data = array_merge($defaults, $data);
-        cachestore_redis_addinstance_form::mock_submit($data);
+        cachestore_advredis_addinstance_form::mock_submit($data);
 
-        $form = new cachestore_redis_addinstance_form();
+        $form = new cachestore_advredis_addinstance_form();
         $errors = $form->configuration_validation($data, [], []);
 
         return [$form, $errors];

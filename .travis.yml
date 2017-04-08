@@ -20,11 +20,11 @@ php:
 - 7.0
 
 env:
-  global:
-  - MOODLE_BRANCH=MOODLE_31_STABLE
   matrix:
-  - DB=pgsql
-  - DB=mysqli
+  - DB=mysqli MOODLE_BRANCH=MOODLE_31_STABLE
+  - DB=pgsql MOODLE_BRANCH=MOODLE_31_STABLE
+  - DB=pgsql MOODLE_BRANCH=MOODLE_32_STABLE
+  - DB=pgsql MOODLE_BRANCH=master
 
 addons:
   apt:
@@ -46,8 +46,8 @@ before_install:
 
 install:
 - moodle-plugin-ci -vvv install
-- moodle-plugin-ci add-config 'define("TEST_CACHESTORE_REDIS_TESTSERVERS", "127.0.0.1");'
-- moodle-plugin-ci add-config 'define("TEST_CACHESTORE_REDIS_TESTSERVERSCLUSTER", "localhost:7000,localhost:7001,localhost:7002");'
+- moodle-plugin-ci add-config 'define("TEST_CACHESTORE_ADVREDIS_TESTSERVERS", "127.0.0.1");'
+- moodle-plugin-ci add-config 'define("TEST_CACHESTORE_ADVREDIS_TESTSERVERSCLUSTER", "localhost:7000,localhost:7001,localhost:7002");'
 - moodle/cache/stores/redis/tests/travis/create-cluster.sh
 
 script:
@@ -61,7 +61,7 @@ script:
 - moodle-plugin-ci validate
 - moodle-plugin-ci phpunit
 - moodle-plugin-ci behat
-#- cd moodle ; vendor/bin/phpunit --testsuite cachestore_redis_testsuite -v # Shows failure/skipped reasons.
+#- cd moodle ; vendor/bin/phpunit --testsuite cachestore_advredis_testsuite -v # Shows failure/skipped reasons.
 
 after_script:
 - killall -9 redis-server

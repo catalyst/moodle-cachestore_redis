@@ -15,14 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Redis cache test - cluster.
+ * Advanced Redis cache test - cluster.
  *
  * If you wish to use these unit tests all you need to do is add the following definition to
  * your config.php file:
  *
- * define('TEST_CACHESTORE_REDIS_TESTSERVERSCLUSTER', 'localhost:7000,localhost:7001');
+ * define('TEST_CACHESTORE_ADVREDIS_TESTSERVERSCLUSTER', 'localhost:7000,localhost:7001');
  *
- * @package   cachestore_redis
+ * @package   cachestore_advredis
  * @author    Daniel Thee Roperto <daniel.roperto@catalyst-au.net>
  * @copyright 2017 Catalyst IT Australia {@link http://www.catalyst-au.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -34,28 +34,28 @@ require_once(__DIR__ . '/../../../tests/fixtures/stores.php');
 require_once(__DIR__ . '/../lib.php');
 
 /**
- * Redis cache test - cluster.
+ * Advanced Redis cache test - cluster.
  *
- * @package   cachestore_redis
+ * @package   cachestore_advredis
  * @author    Daniel Thee Roperto <daniel.roperto@catalyst-au.net>
  * @copyright 2017 Catalyst IT Australia {@link http://www.catalyst-au.net}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class cachestore_redis_cluster_test extends advanced_testcase {
+class cachestore_advredis_cluster_test extends advanced_testcase {
     /**
-     * @return \cachestore_redis
+     * @return \cachestore_advredis
      */
     public function create_store() {
         global $DB;
         /** @var cache_definition $definition */
-        $definition = cache_definition::load_adhoc(cache_store::MODE_APPLICATION, 'cachestore_redis', 'phpunit_test');
-        $servers = str_replace(',', "\n", TEST_CACHESTORE_REDIS_TESTSERVERSCLUSTER);
+        $definition = cache_definition::load_adhoc(cache_store::MODE_APPLICATION, 'cachestore_advredis', 'phpunit_test');
+        $servers = str_replace(',', "\n", TEST_CACHESTORE_ADVREDIS_TESTSERVERSCLUSTER);
         $config = [
             'server'      => $servers,
             'prefix'      => $DB->get_prefix(),
             'clustermode' => true,
         ];
-        $store = new cachestore_redis('TestCluster', $config);
+        $store = new cachestore_advredis('TestCluster', $config);
         $store->initialise($definition);
         $store->purge();
 
@@ -63,18 +63,18 @@ class cachestore_redis_cluster_test extends advanced_testcase {
     }
 
     public function setUp() {
-        if (!cachestore_redis::are_requirements_met()) {
-            self::markTestSkipped('Could not test cachestore_redis with cluster, missing requirements.');
+        if (!cachestore_advredis::are_requirements_met()) {
+            self::markTestSkipped('Could not test cachestore_advredis with cluster, missing requirements.');
         }
         if (!class_exists('RedisCluster')) {
-            self::markTestSkipped('Could not test cachestore_redis with cluster, class RedisCluster not available.');
+            self::markTestSkipped('Could not test cachestore_advredis with cluster, class RedisCluster not available.');
         }
-        if (!defined('TEST_CACHESTORE_REDIS_TESTSERVERSCLUSTER')) {
+        if (!defined('TEST_CACHESTORE_ADVREDIS_TESTSERVERSCLUSTER')) {
             self::markTestSkipped(
-                'Could not test cachestore_redis with cluster, missing configuration. '.
+                'Could not test cachestore_advredis with cluster, missing configuration. '.
                 'Check tests/travis directory for an example on how to setup redis. '.
                 'Example to add in configuration: '.
-                "define('TEST_CACHESTORE_REDIS_TESTSERVERSCLUSTER', 'localhost:7000,localhost:7001,localhost:7002');"
+                "define('TEST_CACHESTORE_ADVREDIS_TESTSERVERSCLUSTER', 'localhost:7000,localhost:7001,localhost:7002');"
             );
         }
     }
@@ -89,7 +89,7 @@ class cachestore_redis_cluster_test extends advanced_testcase {
         global $DB;
 
         // Add a time before and spaces after the first server. Also adds a blank line before second server.
-        $servers = explode(',', TEST_CACHESTORE_REDIS_TESTSERVERSCLUSTER);
+        $servers = explode(',', TEST_CACHESTORE_ADVREDIS_TESTSERVERSCLUSTER);
         $servers[0] = "\t" . $servers[0] . "  \n";
         $servers = implode("\n", $servers);
 
@@ -99,7 +99,7 @@ class cachestore_redis_cluster_test extends advanced_testcase {
             'clustermode' => true,
         ];
 
-        $store = new cachestore_redis('TestCluster', $config);
+        $store = new cachestore_advredis('TestCluster', $config);
 
         self::assertTrue($store->is_ready());
     }
@@ -143,7 +143,7 @@ class cachestore_redis_cluster_test extends advanced_testcase {
             'prefix'      => $DB->get_prefix(),
             'clustermode' => true,
         ];
-        $store = new cachestore_redis('TestCluster', $config);
+        $store = new cachestore_advredis('TestCluster', $config);
 
         // Failed to connect should show a debugging message.
         self::assertCount(1, phpunit_util::get_debugging_messages() );
@@ -160,7 +160,7 @@ class cachestore_redis_cluster_test extends advanced_testcase {
             'prefix'      => $DB->get_prefix(),
             'clustermode' => true,
         ];
-        $store = new cachestore_redis('TestCluster', $config);
+        $store = new cachestore_advredis('TestCluster', $config);
 
         // Failed to connect should show a debugging message.
         self::assertCount(1, phpunit_util::get_debugging_messages() );
@@ -177,7 +177,7 @@ class cachestore_redis_cluster_test extends advanced_testcase {
             'prefix'      => $DB->get_prefix(),
             'clustermode' => true,
         ];
-        $store = new cachestore_redis('TestCluster', $config);
+        $store = new cachestore_advredis('TestCluster', $config);
 
         // Failed to connect should show a debugging message.
         self::assertCount(1, phpunit_util::get_debugging_messages() );

@@ -1,5 +1,5 @@
-Redis Cache Store for Moodle
-============================
+Advanced Redis Cache Store for Moodle
+=====================================
 
 A Moodle cache store plugin for [Redis](http://redis.io).
 

@@ -15,14 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Redis cache test.
+ * Advanced Redis cache test.
  *
  * If you wish to use these unit tests all you need to do is add the following definition to
  * your config.php file.
  *
- * define('TEST_CACHESTORE_REDIS_TESTSERVERS', '127.0.0.1');
+ * define('TEST_CACHESTORE_ADVREDIS_TESTSERVERS', '127.0.0.1');
  *
- * @package   cachestore_redis
+ * @package   cachestore_advredis
  * @copyright Copyright (c) 2015 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -33,15 +33,15 @@ require_once(__DIR__.'/../../../tests/fixtures/stores.php');
 require_once(__DIR__.'/../lib.php');
 
 /**
- * Redis cache test.
+ * Advanced Redis cache test.
  *
- * @package   cachestore_redis
+ * @package   cachestore_advredis
  * @copyright Copyright (c) 2015 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class cachestore_redis_test extends cachestore_tests {
+class cachestore_advredis_test extends cachestore_tests {
     /**
-     * @var cachestore_redis
+     * @var cachestore_advredis
      */
     protected $store;
 
@@ -51,19 +51,19 @@ class cachestore_redis_test extends cachestore_tests {
      * @return string
      */
     protected function get_class_name() {
-        return 'cachestore_redis';
+        return 'cachestore_advredis';
     }
 
     public function setUp() {
-        if (!cachestore_redis::are_requirements_met() || !defined('TEST_CACHESTORE_REDIS_TESTSERVERS')) {
-            $this->markTestSkipped('Could not test cachestore_redis. Requirements are not met.');
+        if (!cachestore_advredis::are_requirements_met() || !defined('TEST_CACHESTORE_ADVREDIS_TESTSERVERS')) {
+            $this->markTestSkipped('Could not test cachestore_advredis. Requirements are not met.');
         }
         parent::setUp();
     }
     protected function tearDown() {
         parent::tearDown();
 
-        if ($this->store instanceof cachestore_redis) {
+        if ($this->store instanceof cachestore_advredis) {
             $this->store->purge();
         }
     }
@@ -71,12 +71,12 @@ class cachestore_redis_test extends cachestore_tests {
     /**
      * Creates the required cachestore for the tests to run against Redis.
      *
-     * @return cachestore_redis
+     * @return cachestore_advredis
      */
-    protected function create_cachestore_redis() {
+    protected function create_cachestore_advredis() {
         /** @var cache_definition $definition */
-        $definition = cache_definition::load_adhoc(cache_store::MODE_APPLICATION, 'cachestore_redis', 'phpunit_test');
-        $store = new cachestore_redis('Test', cachestore_redis::unit_test_configuration());
+        $definition = cache_definition::load_adhoc(cache_store::MODE_APPLICATION, 'cachestore_advredis', 'phpunit_test');
+        $store = new cachestore_advredis('Test', cachestore_advredis::unit_test_configuration());
         $store->initialise($definition);
 
         $this->store = $store;
@@ -91,7 +91,7 @@ class cachestore_redis_test extends cachestore_tests {
     }
 
     public function test_has() {
-        $store = $this->create_cachestore_redis();
+        $store = $this->create_cachestore_advredis();
 
         $this->assertTrue($store->set('foo', 'bar'));
         $this->assertTrue($store->has('foo'));
@@ -99,7 +99,7 @@ class cachestore_redis_test extends cachestore_tests {
     }
 
     public function test_has_any() {
-        $store = $this->create_cachestore_redis();
+        $store = $this->create_cachestore_advredis();
 
         $this->assertTrue($store->set('foo', 'bar'));
         $this->assertTrue($store->has_any(array('bat', 'foo')));
@@ -107,7 +107,7 @@ class cachestore_redis_test extends cachestore_tests {
     }
 
     public function test_has_all() {
-        $store = $this->create_cachestore_redis();
+        $store = $this->create_cachestore_advredis();
 
         $this->assertTrue($store->set('foo', 'bar'));
         $this->assertTrue($store->set('bat', 'baz'));
@@ -116,7 +116,7 @@ class cachestore_redis_test extends cachestore_tests {
     }
 
     public function test_lock() {
-        $store = $this->create_cachestore_redis();
+        $store = $this->create_cachestore_advredis();
 
         $this->assertTrue($store->acquire_lock('lock', '123'));
         $this->assertTrue($store->check_lock_state('lock', '123'));
@@ -127,7 +127,7 @@ class cachestore_redis_test extends cachestore_tests {
     }
 
     public function test_it_is_ready_after_connecting() {
-        $store = $this->create_cachestore_redis();
+        $store = $this->create_cachestore_advredis();
         self::assertTrue($store->is_ready());
     }
 }

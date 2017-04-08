@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Redis Cache Store - Version information
+ * Advanced Redis Cache Store - Version information
  *
- * @package   cachestore_redis
+ * @package   cachestore_advredis
  * @copyright 2013 Adam Durana
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -27,5 +27,5 @@ defined('MOODLE_INTERNAL') || die();
 $plugin->version    = 2016121301;
 $plugin->requires   = 2016052305;
 $plugin->maturity   = MATURITY_STABLE;
-$plugin->component  = 'cachestore_redis';
+$plugin->component  = 'cachestore_advredis';
 $plugin->release    = '3.0.4 (Build: 20160509) Backported';

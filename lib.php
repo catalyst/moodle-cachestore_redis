@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Redis Cache Store - Main library
+ * Advanced Redis Cache Store - Main library
  *
- * @package   cachestore_redis
+ * @package   cachestore_advredis
  * @copyright 2013 Adam Durana
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Redis Cache Store
+ * Advanced Redis Cache Store
  *
  * To allow separation of definitions in Moodle and faster purging, each cache
  * is implemented as a Redis hash.  That is a trade-off between having functionality of TTL
@@ -36,7 +36,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   2013 Adam Durana
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class cachestore_redis extends cache_store implements cache_is_key_aware, cache_is_lockable,
+class cachestore_advredis extends cache_store implements cache_is_key_aware, cache_is_lockable,
         cache_is_configurable, cache_is_searchable {
     /**
      * Compressor
@@ -104,7 +104,7 @@ class cachestore_redis extends cache_store implements cache_is_key_aware, cache_
     protected $compressor = self::COMPRESSOR_NONE;
 
     /**
-     * Redis in cluster mode.
+     * Advanced Redis in cluster mode.
      *
      * @var bool
      */
@@ -543,7 +543,7 @@ class cachestore_redis extends cache_store implements cache_is_key_aware, cache_
         if (!self::are_requirements_met()) {
             return false;
         }
-        $config = get_config('cachestore_redis');
+        $config = get_config('cachestore_advredis');
         if (empty($config->test_server)) {
             return false;
         }
@@ -551,7 +551,7 @@ class cachestore_redis extends cache_store implements cache_is_key_aware, cache_
         if (!empty($config->test_serializer)) {
             $configuration['serializer'] = $config->test_serializer;
         }
-        $cache = new cachestore_redis('Redis test', $configuration);
+        $cache = new cachestore_advredis('Redis test', $configuration);
         $cache->initialise($definition);
 
         return $cache;
@@ -566,10 +566,10 @@ class cachestore_redis extends cache_store implements cache_is_key_aware, cache_
         global $DB;
 
         if (!self::are_requirements_met() || !self::ready_to_be_used_for_testing()) {
-            throw new moodle_exception('TEST_CACHESTORE_REDIS_TESTSERVERS not configured, unable to create test configuration');
+            throw new moodle_exception('TEST_CACHESTORE_ADVREDIS_TESTSERVERS not configured, unable to create test configuration');
         }
 
-        return ['server' => TEST_CACHESTORE_REDIS_TESTSERVERS,
+        return ['server' => TEST_CACHESTORE_ADVREDIS_TESTSERVERS,
                 'prefix' => $DB->get_prefix(),
         ];
     }
@@ -577,12 +577,12 @@ class cachestore_redis extends cache_store implements cache_is_key_aware, cache_
     /**
      * Returns true if this cache store instance is both suitable for testing, and ready for testing.
      *
-     * When TEST_CACHESTORE_REDIS_TESTSERVERS is set, then we are ready to be use d for testing.
+     * When TEST_CACHESTORE_ADVREDIS_TESTSERVERS is set, then we are ready to be use d for testing.
      *
      * @return bool
      */
     public static function ready_to_be_used_for_testing() {
-        return defined('TEST_CACHESTORE_REDIS_TESTSERVERS');
+        return defined('TEST_CACHESTORE_ADVREDIS_TESTSERVERS');
     }
 
     /**
@@ -591,11 +591,11 @@ class cachestore_redis extends cache_store implements cache_is_key_aware, cache_
      */
     public static function config_get_serializer_options() {
         $options = array(
-            Redis::SERIALIZER_PHP => get_string('serializer_php', 'cachestore_redis')
+            Redis::SERIALIZER_PHP => get_string('serializer_php', 'cachestore_advredis')
         );
 
         if (defined('Redis::SERIALIZER_IGBINARY')) {
-            $options[Redis::SERIALIZER_IGBINARY] = get_string('serializer_igbinary', 'cachestore_redis');
+            $options[Redis::SERIALIZER_IGBINARY] = get_string('serializer_igbinary', 'cachestore_advredis');
         }
         return $options;
     }
@@ -607,8 +607,8 @@ class cachestore_redis extends cache_store implements cache_is_key_aware, cache_
      */
     public static function config_get_compressor_options() {
         return [
-            self::COMPRESSOR_NONE     => get_string('compressor_none', 'cachestore_redis'),
-            self::COMPRESSOR_PHP_GZIP => get_string('compressor_php_gzip', 'cachestore_redis'),
+            self::COMPRESSOR_NONE     => get_string('compressor_none', 'cachestore_advredis'),
+            self::COMPRESSOR_PHP_GZIP => get_string('compressor_php_gzip', 'cachestore_advredis'),
         ];
     }
 
