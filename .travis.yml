@@ -26,19 +26,29 @@ env:
   - DB=pgsql
   - DB=mysqli
 
+addons:
+  apt:
+    packages:
+    - redis-server
+    - ruby
+    - realpath
+
 before_install:
+- pecl install redis
+- php -m
+- php -r 'echo "Version=".phpversion("redis")." Redis=".class_exists("Redis")." RedisCluster=".class_exists("RedisCluster");'
+- gem install redis
 - phpenv config-rm xdebug.ini
-- echo "extension = redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 - cd ../..
 - composer selfupdate
 - composer create-project -n --no-dev --prefer-dist moodlerooms/moodle-plugin-ci ci ^1
 - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
-- php -m
-- php -r 'echo "Version=".phpversion("redis")." Redis=".class_exists("Redis")." RedisCluster=".class_exists("RedisCluster");'
 
 install:
 - moodle-plugin-ci -vvv install
 - moodle-plugin-ci add-config 'define("TEST_CACHESTORE_REDIS_TESTSERVERS", "127.0.0.1");'
+- moodle-plugin-ci add-config 'define("TEST_CACHESTORE_REDIS_TESTSERVERSCLUSTER", "localhost:7000,localhost:7001,localhost:7002");'
+- moodle/cache/stores/redis/tests/travis/create-cluster.sh
 
 script:
 - moodle-plugin-ci phplint
@@ -51,4 +61,7 @@ script:
 - moodle-plugin-ci validate
 - moodle-plugin-ci phpunit
 - moodle-plugin-ci behat
-# - cd moodle ; vendor/bin/phpunit --testsuite cachestore_redis_testsuite -v # Shows failure/skipped reasons.
+#- cd moodle ; vendor/bin/phpunit --testsuite cachestore_redis_testsuite -v # Shows failure/skipped reasons.
+
+after_script:
+- killall -9 redis-server
