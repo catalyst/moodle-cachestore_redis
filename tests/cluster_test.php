@@ -71,7 +71,9 @@ class cachestore_redis_cluster_test extends advanced_testcase {
         }
         if (!defined('TEST_CACHESTORE_REDIS_TESTSERVERSCLUSTER')) {
             self::markTestSkipped(
-                'Could not test cachestore_redis with cluster, missing configuration. Example: '.
+                'Could not test cachestore_redis with cluster, missing configuration. '.
+                'Check tests/travis directory for an example on how to setup redis. '.
+                'Example to add in configuration: '.
                 "define('TEST_CACHESTORE_REDIS_TESTSERVERSCLUSTER', 'localhost:7000,localhost:7001,localhost:7002');"
             );
         }
