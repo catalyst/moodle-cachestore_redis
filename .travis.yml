@@ -15,16 +15,20 @@ cache:
   - $HOME/.composer/cache
 
 php:
-- 5.5
 - 5.6
 - 7.0
 
 env:
-  matrix:
-  - DB=mysqli MOODLE_BRANCH=MOODLE_31_STABLE
-  - DB=pgsql MOODLE_BRANCH=MOODLE_31_STABLE
-  - DB=pgsql MOODLE_BRANCH=MOODLE_32_STABLE
-  - DB=pgsql MOODLE_BRANCH=master
+- DB=pgsql MOODLE_BRANCH=MOODLE_31_STABLE
+- DB=pgsql MOODLE_BRANCH=MOODLE_32_STABLE
+- DB=pgsql MOODLE_BRANCH=master
+
+matrix:
+  include:
+  - php: 5.5
+    env: DB=mysqli MOODLE_BRANCH=MOODLE_31_STABLE
+  - php: 7.1
+    env: DB=mysqli MOODLE_BRANCH=master
 
 addons:
   apt:
@@ -48,7 +52,7 @@ install:
 - moodle-plugin-ci -vvv install
 - moodle-plugin-ci add-config 'define("TEST_CACHESTORE_ADVREDIS_TESTSERVERS", "127.0.0.1");'
 - moodle-plugin-ci add-config 'define("TEST_CACHESTORE_ADVREDIS_TESTSERVERSCLUSTER", "localhost:7000,localhost:7001,localhost:7002");'
-- moodle/cache/stores/redis/tests/travis/create-cluster.sh
+- moodle/cache/stores/advredis/tests/travis/create-cluster.sh
 
 script:
 - moodle-plugin-ci phplint
