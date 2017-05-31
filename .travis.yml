@@ -21,10 +21,19 @@ php:
 
 env:
   global:
-  - MOODLE_BRANCH=MOODLE_31_STABLE
-  matrix:
   - DB=pgsql
-  - DB=mysqli
+  matrix:
+  - MOODLE_BRANCH=MOODLE_24_STABLE
+  - MOODLE_BRANCH=MOODLE_25_STABLE
+  - MOODLE_BRANCH=MOODLE_26_STABLE
+  - MOODLE_BRANCH=MOODLE_27_STABLE
+  - MOODLE_BRANCH=MOODLE_28_STABLE
+  - MOODLE_BRANCH=MOODLE_29_STABLE
+  - MOODLE_BRANCH=MOODLE_30_STABLE
+  - MOODLE_BRANCH=MOODLE_31_STABLE
+  - MOODLE_BRANCH=MOODLE_32_STABLE
+  - MOODLE_BRANCH=MOODLE_33_STABLE
+  - MOODLE_BRANCH=master
 
 addons:
   apt:
@@ -63,7 +72,7 @@ script:
 - moodle-plugin-ci validate
 - moodle-plugin-ci phpunit
 - moodle-plugin-ci behat
-#- cd moodle ; vendor/bin/phpunit --testsuite cachestore_redis_testsuite -v # Shows failure/skipped reasons.
+- cd moodle ; vendor/bin/phpunit --testsuite cachestore_redis_testsuite -v # Shows failure/skipped reasons.
 
 after_script:
 - killall -9 redis-server
