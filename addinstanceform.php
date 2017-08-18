@@ -20,7 +20,6 @@
  * @package   cachestore_redis
  * @copyright 2013 Adam Durana
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @var $CFG  stdClass
  */
 
 defined('MOODLE_INTERNAL') || die();

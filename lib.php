@@ -132,7 +132,6 @@ class cachestore_redis extends cache_store implements cache_is_key_aware, cache_
     /**
      * Get the features of this type of cache store.
      *
-     * @inheritdoc PHPMD will not warn about unused parameters if overriding.
      * @param array $configuration
      * @return int
      */
@@ -143,7 +142,6 @@ class cachestore_redis extends cache_store implements cache_is_key_aware, cache_
     /**
      * Get the supported modes of this type of cache store.
      *
-     * @inheritdoc PHPMD will not warn about unused parameters if overriding.
      * @param array $configuration
      * @return int
      */
@@ -173,6 +171,7 @@ class cachestore_redis extends cache_store implements cache_is_key_aware, cache_
         if (array_key_exists('clustermode', $configuration)) {
             $this->clustermode = (bool)$configuration['clustermode'];
         }
+        $password = !empty($configuration['password']) ? $configuration['password'] : '';
         $prefix = !empty($configuration['prefix']) ? $configuration['prefix'] : '';
         $this->redis = $this->new_redis($configuration['server'], $prefix, $password);
     }
@@ -662,6 +661,9 @@ class cachestore_redis extends cache_store implements cache_is_key_aware, cache_
 
         try {
             $redis = new RedisCluster(null, $trimmedservers);
+            if (!empty($password)) {
+                $redis->auth($password);
+            }
             $this->isready = true;
         } catch (RedisClusterException $exception) {
             debugging($exception->getMessage());
@@ -687,6 +689,9 @@ class cachestore_redis extends cache_store implements cache_is_key_aware, cache_
 
         $this->isready = false;
         if ($redis->connect($server, $port)) {
+            if (!empty($password)) {
+                $redis->auth($password);
+            }
             $this->isready = $this->ping($redis);
         }
 
