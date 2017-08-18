@@ -35,7 +35,7 @@ addons:
 
 before_install:
 - pecl channel-update pecl.php.net
-- echo yes | pecl install redis
+- echo yes | pecl install igbinary redis
 - php -m
 - php -r 'echo "Version=".phpversion("redis")." Redis=".class_exists("Redis")." RedisCluster=".class_exists("RedisCluster");'
 - gem install redis
